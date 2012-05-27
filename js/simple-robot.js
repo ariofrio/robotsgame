@@ -34,8 +34,8 @@ self.onmessage = function(ev) {
     actions['radar.turn'] = pi/4; // max
   }*/
 
-  actions['thruster.force'] = 200
-  actions['thruster.angularVelocity'] = 1
+  actions['thruster.force'] = 5
+  actions['thruster.angularVelocity'] = 0
 
   self.postMessage(actions);
 }

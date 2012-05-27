@@ -86,17 +86,32 @@ class Actor
 class Robot extends Actor
   constructor: (@battle, @script) ->
     @worker = new Worker(@script)
+    @actions = {}
 
     @body = @battle.createBody
       shapes: [
-        type: 'circle'
-        density: 1
-        radius: robotRadius
+        { # chassis
+          type: 'circle'
+          density: 1
+          radius: robotRadius
+        }, { # right eye
+          type: 'circle'
+          density: 0
+          radius: robotRadius/8
+          localPosition: {x: robotRadius/2, y: robotRadius/4}
+        }, { # left eye
+          type: 'circle'
+          density: 0
+          radius: robotRadius/8
+          localPosition: {x: robotRadius/2, y: -robotRadius/4}
+        }
       ]
       position:
         x: Math.random()*(fieldWidth-robotRadius)
         y: Math.random()*(fieldHeight-robotRadius)
-      linearVelocity: {x: 2, y: 2}
+      linearVelocity: {y: 0.1}
+      linearDamping: 0
+      angularDamping: 0.05
       userData: actor: this
 
     # Set up actuators and make them actors
@@ -105,24 +120,24 @@ class Robot extends Actor
 
   start: ->
     @worker.onmessage = (ev) =>
-      # Parse actions and add them on to the default actions
-      dotterizedActions = _.dotterize(owl.deepCopy(@defaultActions))
-      _.extend(dotterizedActions, ev.data)
-      @actions = _.undotterize(dotterizedActions)
+      @actions = _.undotterize(ev.data)
 
   # Every turn, the previous turn's actions are executed
   # and the robot gets updated sensor information.
   turn: ->
     for actuator in @actuators
-      actuator.executePartialActions(@actions[actuator.getName])
+      actuator.executePartialActions(@actions[actuator.getName()])
     @worker.postMessage(@getSensors())
 
   getSensors: -> {}
 
 class Actuator extends Actor
+  # The name, in lowerCamelCase, of the actuator class.
+  #
   # http://blog.magnetiq.com/post/514962277/finding-out-class-names-of-javascript-objects
   getName: ->
-    @constructor.toString().match(/function\s*(\w+)/)[1]
+    className = @constructor.toString().match(/function\s*(\w+)/)[1]
+    className.substr(0, 1).toLowerCase() + className.substr(1)
 
   defaults: {}
   execute: ->
@@ -137,8 +152,8 @@ class Thruster extends Actuator
       shapes: [
         type: 'box'
         density: 2
-        extent: {x: robotRadius/16, y: robotRadius/8}
-        localPosition: {x: 0, y: 0} # TODO: tweak
+        extents: {x: robotRadius/4, y: robotRadius/8}
+        localPosition: {x: -robotRadius/4/2, y: 0} # TODO: tweak
       ]
       position: @robot.body.GetOriginPosition()
       userData: actor: this
@@ -160,8 +175,8 @@ class Thruster extends Actuator
     # TODO: Correct vector and position
     @body.ApplyForce(
       new b2Vec2( # force vector
-        @force * Math.cosh(@body.GetRotation()),
-        @force * Math.sin(@body.getRotation())
+        @force * Math.cos(@body.GetRotation()),
+        @force * Math.sin(@body.GetRotation())
       ), @body.GetOriginPosition() # source position
     )
 
@@ -240,14 +255,16 @@ class Renderer
           @ctx.lineTo(v.x, v.y)
           i++
         @ctx.lineTo(tV.x, tV.y)
+      else
+        console.warn('unknown b2 shape')
 
     @ctx.fillStyle =
       if shape.m_body.m_userData.actor instanceof Robot
-        "blue"
+        "rgba(0, 0, 255, 0.5)"
       # else if shape.m_body.actor instanceof Bullet
-        # "red"
+        # "rgba(255, 0, 0, 0.5)"
       else
-        "gray"
+        "rgba(100, 100, 100, 0.5)"
     @ctx.fill()
 
 class Frontend
