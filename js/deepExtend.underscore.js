@@ -1,5 +1,6 @@
 // Based conceptually on the _.extend() function in underscore.js ( http://documentcloud.github.com/underscore/#extend )
 // Author: Kurt Milam - http://xioup.com
+// Modified by: Andres Riofrio to overwrite in case of a type mismatch
 
 deepExtend = function(obj) {
   var parentRE = /#{\s*?_\s*?}/,
@@ -17,19 +18,17 @@ deepExtend = function(obj) {
             obj[prop] = source[prop].replace(parentRE, obj[prop]);
           }
         }
-        else if (_.isArray(obj[prop]) || _.isArray(source[prop])){
-          if (!_.isArray(obj[prop]) || !_.isArray(source[prop])){
-            throw 'Error: Trying to combine an array with a non-array (' + prop + ')';
-          } else {
-            obj[prop] = _.reject(_.deepExtend(obj[prop], source[prop]), function (item) { return _.isNull(item);});
-          }
+        else if (_.isArray(source[prop])){
+          if (!_.isArray(obj[prop])) {
+            obj[prop] = []
+          } 
+          obj[prop] = _.reject(_.deepExtend(obj[prop], source[prop]), function (item) { return _.isNull(item);});
         }
-        else if (_.isObject(obj[prop]) || _.isObject(source[prop])){
-          if (!_.isObject(obj[prop]) || !_.isObject(source[prop])){
-            throw 'Error: Trying to combine an object with a non-object (' + prop + ')';
-          } else {
-            obj[prop] = _.deepExtend(obj[prop], source[prop]);
+        else if (_.isObject(source[prop])){
+          if (!_.isObject(obj[prop])) {
+            obj[prop] = {}
           }
+          obj[prop] = _.deepExtend(obj[prop], source[prop]);
         } else {
           obj[prop] = source[prop];
         }
