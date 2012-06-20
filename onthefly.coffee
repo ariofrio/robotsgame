@@ -12,7 +12,7 @@ module.exports = onthefly = (directory, converters = []) ->
           return done() unless url.endsWith ".js"
           fs.readFile path.join(directory, url.match(/^(.*)\.js$/)[1] + ".coffee"), (err, data) ->
             return done() if err?
-            done(undefined, coffee.compile(data))
+            done(undefined, coffee.compile(new String(data)))
 
       when "less" 
         less = require 'less'
