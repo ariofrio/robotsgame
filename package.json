@@ -1,0 +1,14 @@
+{
+  "name": "robots",
+  "version": "0.1.0",
+  "author": "Andres Riofrio <riofrios@gmail.com>",
+  "dependencies": {
+    "express": "~2.5.10",
+    "coffee-script": "~1.3.3",
+    "less": "~1.3.0",
+    "connect-file-cache": "~0.2.4",
+    "jade": "~0.26.1",
+    "sugar": "~1.2.5",
+    "async": "~0.1.22"
+  }
+}

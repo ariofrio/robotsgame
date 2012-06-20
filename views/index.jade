@@ -1,0 +1,28 @@
+doctype 5
+html
+  head
+    title Robots!
+    != css('app')
+
+    // shims
+    != js('shims/prefixfree')
+    != js('shims/animationFrame')
+
+    != js('global/underscore') // globally available
+    
+    != js('global/inject')
+    script
+      require.setModuleRoot("/js");
+      require.addRule(/^box2d$/, {
+        path: "box2d.js",
+        pointcuts: {
+          after: function () {
+            module.setExports(this.Box2D);
+          }
+        }
+      });
+      require.setExpires(0); // "PLEASE don't cache it!"
+      require.run("robots/app");
+  body
+    canvas#field
+
