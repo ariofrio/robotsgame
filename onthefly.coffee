@@ -12,7 +12,7 @@ module.exports = onthefly = (directory, converters = []) ->
           return done() unless url.endsWith ".js"
           fs.readFile path.join(directory, url.match(/^(.*)\.js$/)[1] + ".coffee"), (err, data) ->
             return done() if err?
-            done(coffee.compile(data))
+            done(undefined, coffee.compile(data))
 
       when "less" 
         less = require 'less'
@@ -22,7 +22,7 @@ module.exports = onthefly = (directory, converters = []) ->
             return done() if err?
             less.render new String(data), (err, out) ->
               return done(err) if err?
-              done(out)
+              done(undefined, out)
       else
         converter
 
@@ -30,15 +30,14 @@ module.exports = onthefly = (directory, converters = []) ->
     next() unless req.method == 'GET'
 
     async.forEachSeries converters, (converter, done) ->
-      converter req.url, (ret) ->
-        if Object.isFunction(ret) # ret is output
-          res.end(ret)
-          next()
-          done(false) # break
-        else if ret? # ret is error
-          next(ret)
-          done(false)
+      converter req.url, (err, out) ->
+        if err?
+          next(err)
+          done(true) # break
+        else if out?
+          res.end(out)
+          done(true) # break
         else # no arg means skip
           done()
-    , -> next()
+    , (foundAMatch) -> next() unless foundAMatch
 

@@ -1,6 +1,5 @@
 express = require 'express'
 onthefly = require './onthefly'
-#holmesFind = require('./holmes')('public/js')
 
 app = express.createServer()
 app.use express.logger('dev')
