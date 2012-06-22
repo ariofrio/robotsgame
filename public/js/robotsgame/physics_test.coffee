@@ -1,6 +1,5 @@
-actors = require '../../lib/robotsgame/actors'
-require '../../lib/robotsgame/control'
-require '../../lib/robotsgame/physics'
+actors = require './actors'
+require './physics'
 
 describe 'Robot', ->
   beforeEach -> @it = new actors.Robot

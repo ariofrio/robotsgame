@@ -1,4 +1,4 @@
-actors = require '../../lib/robotsgame/actors'
+actors = require './actors'
 
 describe 'Game', ->
   beforeEach -> @it = new actors.Game
