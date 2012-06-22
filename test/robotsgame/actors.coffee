@@ -1,5 +1,4 @@
 actors = require '../../lib/robotsgame/actors'
-require '../../lib/robotsgame/control'
 
 describe 'Game', ->
   beforeEach -> @it = new actors.Game
@@ -13,12 +12,13 @@ describe 'Robot', ->
 
 describe 'Thruster', ->
   beforeEach -> @it = new actors.Thruster
-  it 'begins deactivated', ->
-    @it.control.activated.should.be.false
   it 'can be activated', ->
-    @it.control.activate()
-    @it.control.activated.should.be.true
-  it 'can be deactivated', ->
-    @it.control.deactivate()
-    @it.control.activated.should.be.false
+    @it.should.have.property('activated')
+  it 'begins deactivated', ->
+    @it.activated.should.be.false
+
+  it 'can be rotated', ->
+    @it.should.have.property('rotating')
+  it 'begins not rotating', ->
+    @it.rotating.should.be.false
 

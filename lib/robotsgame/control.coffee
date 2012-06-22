@@ -1,18 +1,8 @@
 actors = require './actors'
 
-actors.Game.prototype.control =
-  initialize: ->
-    @that.robots = [new actors.Robot, new actors.Robot]
+#actors.Game.prototype.control =
 
-actors.Robot.prototype.control =
-  initialize: ->
-    @that.thruster = new actors.Thruster
+#actors.Robot.prototype.control =
 
-actors.Thruster.prototype.control =
-  activated: false
-  activate: ->
-    @activated = true
-  deactivate: ->
-    @activated = false
-
+#actors.Thruster.prototype.control =
 
