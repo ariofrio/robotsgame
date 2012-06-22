@@ -20,10 +20,6 @@ var Mb = [],
     Ub = "function" === typeof importScripts,
     ac = !Tb && !Qb && !Ub;
 if (Qb) {
-    throw "Running on Node.js has been commented out, please see the code line 23";
-    // We don't want require("fs") because Inject.js will try loading that
-    // in the browser.
-    /*
     print = (function (b) {
         process.stdout.write(b + "\n")
     });
@@ -37,7 +33,6 @@ if (Qb) {
         return d
     });
     Mb = process.argv.slice(2)
-    */
 } else {
     ac ? (this.read || (read = (function (b) {
         snarf(b)
